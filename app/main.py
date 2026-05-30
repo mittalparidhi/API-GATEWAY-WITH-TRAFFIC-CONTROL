@@ -6,10 +6,9 @@ from app.services.forwarder import forward_request
 from app.core.router import dynamic_router
 from app.utils.logger import log_request
 
-# ✅ App defined BEFORE exception handlers
 app = FastAPI(title="Self-Learning API Gateway (Core)", debug=True)
 
-# Global middleware to measure latency and log
+
 @app.middleware("http")
 async def log_middleware(request: Request, call_next):
     start_time = time.perf_counter()
@@ -41,7 +40,7 @@ async def log_middleware(request: Request, call_next):
 
     return response
 
-# ✅ Exception handler (after app is defined)
+# Exception handler (after app is defined)
 @app.exception_handler(Exception)
 async def debug_exception_handler(request: Request, exc: Exception):
     return {"error": str(exc), "path": str(request.url)}
