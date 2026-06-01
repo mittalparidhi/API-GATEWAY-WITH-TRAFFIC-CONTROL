@@ -5,14 +5,14 @@ import time
 from app.services.forwarder import forward_request
 from app.utils.logger import log_request
 
-ROUTE_CONFIG = "routes.env"  # Or load from DB in real case
-ROUTE_REFRESH_INTERVAL = 5   # seconds
+ROUTE_CONFIG = "routes.env"  
+ROUTE_REFRESH_INTERVAL = 5 
 
 dynamic_router = APIRouter()
 routes_map = {}
 
 def load_routes():
-    """Load routes from routes.env into routes_map."""
+    
     global routes_map
     if not os.path.exists(ROUTE_CONFIG):
         routes_map = {}
@@ -32,7 +32,7 @@ def load_routes():
     print(f"[Router] Routes loaded: {routes_map}")
 
 def watch_routes():
-    """Watch the routes.env file for changes and reload dynamically."""
+   
     last_mtime = None
     while True:
         try:
@@ -45,11 +45,11 @@ def watch_routes():
             print(f"[Router] Watch error: {e}")
         time.sleep(ROUTE_REFRESH_INTERVAL)
 
-# ✅ Load routes initially and start watching in background
+
 load_routes()
 threading.Thread(target=watch_routes, daemon=True).start()
 
-# ✅ Root info route (accessible at http://127.0.0.1:8000/)
+
 @dynamic_router.get("/")
 async def root_info():
     if routes_map:
@@ -64,7 +64,7 @@ async def root_info():
             "note": "Please update routes.env to add route mappings."
         }
 
-# ✅ Catch-all route for dynamic forwarding
+
 @dynamic_router.api_route("/{full_path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])
 async def catch_all(request: Request, full_path: str):
     backend_url = None
@@ -76,8 +76,7 @@ async def catch_all(request: Request, full_path: str):
     if not backend_url:
         return {"error": "No backend mapped for this route"}
 
-    # Log request for analytics/debugging
+    
     log_request(request)
 
-    # Forward the request to the mapped backend
     return await forward_request(request, backend_url)
