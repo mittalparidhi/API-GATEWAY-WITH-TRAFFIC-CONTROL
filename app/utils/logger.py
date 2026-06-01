@@ -4,9 +4,7 @@ import sys
 import os
 import time
 
-# ─────────────────────────────────────────────
-# Logger configuration
-# ─────────────────────────────────────────────
+
 logger.remove()
 
 LOG_FORMAT = (
@@ -29,9 +27,6 @@ logger.add(
     level="INFO",
 )
 
-# ─────────────────────────────────────────────
-# Helper to log API requests
-# ─────────────────────────────────────────────
 async def log_request(
     method: str,
     path: str = "",
