@@ -7,11 +7,11 @@ from loguru import logger
 import hmac
 
 def normalize_headers(headers: Dict[str, str]) -> Dict[str, str]:
-    """Normalize header names to lowercase for consistent lookups."""
+    
     return {k.lower(): v for k, v in headers.items()}
 
 def verify_api_key(headers: Dict[str, str]) -> bool:
-    """Check if request contains a valid API key."""
+    
     headers = normalize_headers(headers)
     api_key = headers.get("x-api-key")
     if not api_key:
@@ -23,7 +23,7 @@ def verify_api_key(headers: Dict[str, str]) -> bool:
     return False
 
 def verify_jwt(headers: Dict[str, str]) -> bool:
-    """Verify JWT token validity."""
+    
     headers = normalize_headers(headers)
     auth_header = headers.get("authorization")
     if not auth_header or not auth_header.lower().startswith("bearer "):
@@ -37,9 +37,7 @@ def verify_jwt(headers: Dict[str, str]) -> bool:
 
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        # Optional: Enforce claims
-        # if payload.get("iss") != "my-service": return False
-        # if "admin" not in payload.get("roles", []): return False
+        
         return True
     except ExpiredSignatureError:
         logger.warning("[Auth] JWT token has expired.")
@@ -52,9 +50,5 @@ def verify_jwt(headers: Dict[str, str]) -> bool:
         return False
 
 def is_authenticated(headers: Dict[str, str]) -> bool:
-    """
-    Flexible authentication:
-    - Try API Key first
-    - Then try JWT token
-    """
+    
     return verify_api_key(headers) or verify_jwt(headers)
